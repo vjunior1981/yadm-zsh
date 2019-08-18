@@ -11,12 +11,41 @@ _prompt_yadm_status () {
     fi
 }
 
+#
+# Functions
+# (sorted alphabetically)
+#
 
+function yadm_current_branch() {
+    local ref
+    ref=$(command yadm symbolic-ref --quiet HEAD 2> /dev/null)
+    local ret=$?
+    if [[ $ret != 0 ]]; then
+      [[ $ret == 128 ]] && return  # no git repo.
+      ref=$(command yadm rev-parse --short HEAD 2> /dev/null) || return
+    fi
+    echo ${ref#refs/heads/}
+}
+
+function yadm_add_all() {
+    for i in $(yadm status -s|awk '{print $2}')
+    do
+    yadm add $i
+    done
+}
+
+function yadm_add_submodule() {
+    local url=$(cat "$1"/.git/config|grep -i url|cut -d'=' -f2)
+    yadm submodule add "${url}" "${1}"
+}
 
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _prompt_yadm_status
 
+#
 # Aliases
+# (sorted alphabetically)
+#
 alias y=yadm
 alias ya='yadm add'
 alias yaa='yadm add -u'
