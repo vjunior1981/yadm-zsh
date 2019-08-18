@@ -1,13 +1,17 @@
 _prompt_yadm_status () {
-    case $(cat ~/.yadm/.status) in
-        (1)
-            print -P '%B%F{magenta}There are local configuration changes. Yadm sync required.%f%b'
-            ;;
-        (2)
-            print -P '%B%F{magenta}Run yadm push.%f%b'
-            ;;
-    esac
+    if [ -f ~/.yadm/.status ]; then
+        case $(cat ~/.yadm/.status) in
+            (1)
+                print -P '%B%F{magenta}There are local configuration changes. Yadm sync required.%f%b'
+                ;;
+            (2)
+                print -P '%B%F{magenta}Run yadm push.%f%b'
+                ;;
+        esac
+    fi
 }
+
+
 
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _prompt_yadm_status
@@ -118,6 +122,7 @@ alias yrup='yadm remote update'
 alias yrv='yadm remote -v'
 alias ysb='yadm status -sb'
 alias ysd='yadm svn dcommit'
+alias yi='yadm init'
 alias ysi='yadm submodule init'
 alias ysps='yadm show --pretty=short --show-signature'
 alias ysr='yadm svn rebase'
